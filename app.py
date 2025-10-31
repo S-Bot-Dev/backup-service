@@ -25,7 +25,6 @@ RETENTION_DAYS = int(os.getenv("RETENTION_DAYS", 14))
 TELEGRAM_TOKEN = os.getenv("BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("ADMIN_CHAT_ID")
 
-
 async def send_telegram_message(text: str):
     if not TELEGRAM_TOKEN or not TELEGRAM_CHAT_ID:
         return
