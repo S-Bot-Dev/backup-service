@@ -5,6 +5,14 @@ import datetime
 from aiohttp import ClientSession
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from dotenv import load_dotenv
+from fastapi import FastAPI
+import uvicorn
+
+app = FastAPI()
+
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
 
 load_dotenv()
 
@@ -71,6 +79,11 @@ async def main():
     scheduler = AsyncIOScheduler()
     scheduler.add_job(run_backup, "cron", hour=2, minute=0)  # каждый день в 2:00
     scheduler.start()
+
+    config_uvicorn = uvicorn.Config(app, host="0.0.0.0", port=8000, log_level="info")
+    server_uvicorn = uvicorn.Server(config_uvicorn)
+    server_task = asyncio.create_task(server_uvicorn.serve())
+
     print("[INFO] Backup service started. Waiting for schedule...")
     while True:
         await asyncio.sleep(3600)  # просто держим контейнер живым
