@@ -75,19 +75,19 @@ async def cleanup_old_backups():
                 print(f"[INFO] Deleted old backup: {file}")
 
 
-async def main():
+async def start_scheduler():
     scheduler = AsyncIOScheduler()
     scheduler.add_job(run_backup, "cron", hour=2, minute=0)  # каждый день в 2:00
     scheduler.start()
+    print("[INFO] Scheduler started")
 
-    config_uvicorn = uvicorn.Config(app, host="0.0.0.0", port=8000, log_level="info")
-    server_uvicorn = uvicorn.Server(config_uvicorn)
-    server_task = asyncio.create_task(server_uvicorn.serve())
-
-    print("[INFO] Backup service started. Waiting for schedule...")
-    while True:
-        await asyncio.sleep(3600)  # просто держим контейнер живым
-
+async def main():
+    # Запускаем scheduler
+    await start_scheduler()
+    # Запускаем FastAPI
+    config = uvicorn.Config(app, host="0.0.0.0", port=8000, log_level="info")
+    server = uvicorn.Server(config)
+    await server.serve()  # uvicorn блокирует loop, но scheduler продолжает работать
 
 if __name__ == "__main__":
     asyncio.run(main())
