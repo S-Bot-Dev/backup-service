@@ -76,7 +76,7 @@ async def cleanup_old_backups():
 
 async def start_scheduler():
     scheduler = AsyncIOScheduler()
-    scheduler.add_job(run_backup, "cron", hour=2, minute=0)  # каждый день в 2:00
+    scheduler.add_job(run_backup, "cron", hour=2, minute=0)
     scheduler.start()
     print("[INFO] Scheduler started")
 
